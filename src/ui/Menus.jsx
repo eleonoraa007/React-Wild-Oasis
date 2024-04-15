@@ -1,6 +1,10 @@
+import { createContext, useContext, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { HiEllipsisVertical } from "react-icons/hi2";
 import styled from "styled-components";
+import useOutsideClick from "../hooks/useOutsideClick";
 
-const StyledMenu = styled.div`
+const Menu = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -60,3 +64,101 @@ const StyledButton = styled.button`
     transition: all 0.3s;
   }
 `;
+
+const MenusContext = createContext();
+
+function Menus({ children }) {
+  const [openId, setOpenId] = useState();
+  const [position, setPosition] = useState(null);
+
+  const close = () => setOpenId("");
+  const open = setOpenId;
+
+  return (
+    <MenusContext.Provider
+      value={{ openId, close, open, position, setPosition }}
+    >
+      {children}
+    </MenusContext.Provider>
+  );
+}
+
+function Toggle({ id }) {
+  const { openId, close, open, setPosition } = useContext(MenusContext);
+
+  useEffect(() => {
+    function handleScroll() {
+      if (openId) {
+        close();
+        document.removeEventListener("wheel", handleScroll);
+      }
+    }
+    if (openId) document.addEventListener("wheel", handleScroll);
+
+    return () => document.removeEventListener("wheel", handleScroll);
+  }, [openId, close]);
+
+  function handleClick(e) {
+    const rect = e.target.closest("button").getBoundingClientRect();
+    // console.log(rect);
+    setPosition({
+      x: window.innerWidth - rect.width - rect.x,
+      //8 is refering to 8px in the margin
+      y: rect.y + rect.height + 8,
+    });
+
+    //if non of the menus is open OR
+    //if there is currently an open menu, but it's different
+    //than the one that is being clicked than...
+    openId === "" || openId !== id ? open(id) : close();
+  }
+
+  return (
+    <StyledToggle onClick={handleClick}>
+      <HiEllipsisVertical />
+    </StyledToggle>
+  );
+}
+
+function List({ id, children }) {
+  const { openId, position, close } = useContext(MenusContext);
+  //when we want to close the portal(new window) by clicking
+  //on the outside of the portal(window)
+  const ref = useOutsideClick(close);
+
+  //if currently open id is diff from the list id then it returns null
+  if (openId !== id) return null;
+
+  //this one will float at the top of the UI
+  // createPortal();
+  return createPortal(
+    <StyledList position={position} ref={ref}>
+      {children}
+    </StyledList>,
+    document.body
+  );
+}
+
+function Button({ children, icon, onClick }) {
+  const { close } = useContext(MenusContext);
+  function handleClick() {
+    //if we want to conditionaly call onClick we use:optional chaining ?.
+    onClick?.();
+    close();
+  }
+  return (
+    <li>
+      <StyledButton onClick={handleClick}>
+        {icon}
+        <span>{children}</span>
+      </StyledButton>
+    </li>
+  );
+}
+
+Menus.Menu = Menu;
+Menus.Toggle = Toggle;
+Menus.List = List;
+Menus.Button = Button;
+
+export default Menus;
