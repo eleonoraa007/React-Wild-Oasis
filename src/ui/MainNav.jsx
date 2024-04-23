@@ -1,6 +1,12 @@
 import styled from "styled-components";
 import { NavLink } from "react-router-dom";
-import { HiOutlineCalendarDays, HiOutlineCog6Tooth, HiOutlineHome, HiOutlineHomeModern, HiOutlineUsers } from "react-icons/hi2";
+import {
+  HiOutlineCalendarDays,
+  HiOutlineCog6Tooth,
+  HiOutlineHome,
+  HiOutlineHomeModern,
+  HiOutlineUsers,
+} from "react-icons/hi2";
 
 /* This works because react-router places the active class on the active NavLink */
 
@@ -53,38 +59,30 @@ function MainNav() {
     <nav>
       <NavList>
         <li>
-          <StyledNavLink  to="/dashboard">
+          <StyledNavLink to="/dashboard">
             <HiOutlineHome />
-              <span>Home</span>
-            </StyledNavLink>
+            <span>Home</span>
+          </StyledNavLink>
           <StyledNavLink to="/bookings">
-            <HiOutlineCalendarDays />  
-            <span>
-            Bookings
-            </span>
+            <HiOutlineCalendarDays />
+            <span>Bookings</span>
           </StyledNavLink>
           <StyledNavLink to="/cabins">
-            <HiOutlineHomeModern />  
-            <span>
-            Cabins
-            </span>
+            <HiOutlineHomeModern />
+            <span>Cabins</span>
           </StyledNavLink>
           <StyledNavLink to="/users">
-            <HiOutlineUsers />  
-            <span>
-            Users
-            </span>
+            <HiOutlineUsers />
+            <span>Users</span>
           </StyledNavLink>
           <StyledNavLink to="/settings">
-            <HiOutlineCog6Tooth />  
-            <span>
-            Settings
-            </span>
+            <HiOutlineCog6Tooth />
+            <span>Settings</span>
           </StyledNavLink>
         </li>
       </NavList>
     </nav>
-  )
+  );
 }
 
-export default MainNav
+export default MainNav;
